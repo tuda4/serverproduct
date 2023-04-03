@@ -37,7 +37,7 @@ const checkPermissions =(permissions) => {
                 message: 'permissions denied'
             })
         }
-        console.log('[permissions]', req.objectKey.permissions)
+        // console.log('[permissions]', req.objectKey.permissions)
         const validPermissions = req.objectKey.permissions.includes(permissions)
         if(!validPermissions) {
             return res.status(403).json({
