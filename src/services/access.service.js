@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const KeyTokenService = require("./key.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getData } = require("../utils");
+const { BadRequestErrorResponse } = require("../core/error.response");
 const RoleShop = {
     SHOP: 'shop',
     WRITER: 'writer',
@@ -15,14 +16,15 @@ const RoleShop = {
 }
 class accessService {
     static singUp = async ({name, email, password}) => {
-        try {
+        // try {
             // step1: check email exists ?
             const holderEmail = await shopModel.findOne({email}).lean()
             if(holderEmail) {
-                return {
-                    code: 'xxx1',
-                    message: 'Shop already registered!'
-                }
+                // return {
+                //     code: 'xxx1',
+                //     message: 'Shop already registered!'
+                // }
+                throw new BadRequestErrorResponse('Error: Shop already registered')
             }
 
             const passwordHash = await bcrypt.hash(password, 10)
@@ -42,10 +44,7 @@ class accessService {
               
 
                 if(!keyTokenShop) {
-                    return {
-                        code: 'xxx02',
-                        message: 'publicKeyString error'
-                    }
+                   throw new BadRequestErrorResponse('Error: public key not available')
                 }
                 // create token pair
 
@@ -63,13 +62,13 @@ class accessService {
                 code: 201,
                 metadata: null
             }
-        } catch (error) {
-            return {
-                code: 'xxx',
-                message: error.message,
-                status: 'error'
-            }
-        }
+        // } catch (error) {
+        //     return {
+        //         code: 'xxx',
+        //         message: error.message,
+        //         status: 'error'
+        //     }
+        // }
 
     }
 }
