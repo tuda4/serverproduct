@@ -6,7 +6,8 @@ const crypto = require('crypto');
 const KeyTokenService = require("./key.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getData } = require("../utils");
-const { BadRequestErrorResponse } = require("../core/error.response");
+const { BadRequestErrorResponse, AuthenticationErrorResponse } = require("../core/error.response");
+const { findByEmail } = require("./shop.service");
 const RoleShop = {
     SHOP: 'shop',
     WRITER: 'writer',
@@ -15,15 +16,37 @@ const RoleShop = {
     ADMIN: 'admin',
 }
 class accessService {
+   /*
+    1. check email in database
+    2. match password
+    3. create access token and refresh token and save 
+    4. generate tokens
+    5. get date and return login
+   */
+    static login = async({email, password, refreshToken = null}) => {
+        // 1.
+        const foundShop = await findByEmail({email})
+        if(!foundShop) throw new BadRequestErrorResponse('Shop not found')
+        // 2.
+        const matchShop = bcrypt.compare(password, foundShop.email)
+        if(!matchShop) throw new AuthenticationErrorResponse('Authentication error')
+        // 3.
+        const privateKey = crypto.randomBytes(64).toString('hex')
+        const publicKey = crypto.randomBytes(64).toString('hex')
+        // 4.
+        const {_id: userId} = foundShop
+        const tokens = await createTokenPair({userId, email}, publicKey, privateKey)
+        await KeyTokenService.createKeyToken({publicKey, privateKey, refreshToken: tokens.refreshToken, userId})
+        return {
+            metadata: {
+                shop: getData({fields: ['_id', 'name', 'email'], object: foundShop}),
+                tokens
+            }
+        }
+    }
     static singUp = async ({name, email, password}) => {
-        // try {
-            // step1: check email exists ?
             const holderEmail = await shopModel.findOne({email}).lean()
             if(holderEmail) {
-                // return {
-                //     code: 'xxx1',
-                //     message: 'Shop already registered!'
-                // }
                 throw new BadRequestErrorResponse('Error: Shop already registered')
             }
 
@@ -46,8 +69,6 @@ class accessService {
                 if(!keyTokenShop) {
                    throw new BadRequestErrorResponse('Error: public key not available')
                 }
-                // create token pair
-
                 const tokens = await createTokenPair({userId: newShop._id, email}, publicKey, privateKey)
                 return {
                     code: 201,
@@ -62,14 +83,6 @@ class accessService {
                 code: 201,
                 metadata: null
             }
-        // } catch (error) {
-        //     return {
-        //         code: 'xxx',
-        //         message: error.message,
-        //         status: 'error'
-        //     }
-        // }
-
     }
 }
 
