@@ -4,6 +4,7 @@ const { findById } = require("../services/apiKey.service");
 
 const HEADER = {
     API_KEY : 'x-api-key',
+    CLIENT_ID : 'x-client-id',
     AUTHORIZATION: 'authorization',
 }
 
@@ -48,13 +49,9 @@ const checkPermissions =(permissions) => {
     }
 }
 
-const asyncHandler = func => {
-    return (req, res, next) => {
-        func(req, res, next).catch(next)
-    }
-}
+
 module.exports = {
     checkApiKey,
     checkPermissions,
-    asyncHandler
+    HEADER
 }
