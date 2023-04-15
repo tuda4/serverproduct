@@ -6,8 +6,9 @@ const crypto = require('crypto');
 const KeyTokenService = require("./key.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { getData } = require("../utils");
-const { BadRequestErrorResponse, AuthenticationErrorResponse } = require("../core/error.response");
+const { BadRequestErrorResponse, AuthenticationErrorResponse, ForbiddenErrorResponse } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
+const { Types } = require("mongoose");
 const RoleShop = {
     SHOP: 'shop',
     WRITER: 'writer',
@@ -16,6 +17,41 @@ const RoleShop = {
     ADMIN: 'admin',
 }
 class accessService {
+
+    static handlerRefreshToken = async({user, refreshToken, keyStore}) => {
+        const {userId, email} = user
+        if(keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteUserById(userId)
+            throw new ForbiddenErrorResponse('Something wrong happened')
+        }
+   
+        if(keyStore.refreshToken !== refreshToken) {
+            throw new AuthenticationErrorResponse('Shop not registered')
+        }
+        const foundShop = await findByEmail({email})
+        if(!foundShop){
+             throw new AuthenticationErrorResponse('Shop not found')
+            }
+        //  create new token
+        const newTokens = createTokenPair({user}, keyStore.publicKey, keyStore.privateKey)
+        // update new tokens
+        console.log({foundShop})
+        console.log({newTokens})
+        await keyStore.updateOne(
+        // {user: new Types.ObjectId(userId)}, 
+        {
+            $set: {
+                refreshToken: newTokens.refreshToken
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken
+            }
+        })
+        return {
+            user,
+            newTokens
+        }
+    }
 
     static logout = async(keyToken) => {
         const deleteKey = await KeyTokenService.removeKeyById(keyToken._id)
