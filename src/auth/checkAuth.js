@@ -6,12 +6,13 @@ const HEADER = {
     API_KEY : 'x-api-key',
     CLIENT_ID : 'x-client-id',
     AUTHORIZATION: 'authorization',
+    REFRESH_TOKEN: 'x-refresh-id',
 }
 
 const checkApiKey  = async (req, res, next) => {
     try {
         const keyHeader = req.headers[HEADER.API_KEY]?.toString()
-        console.log(keyHeader)
+        console.log({keyHeader})
         if(!keyHeader) {
             return res.status(403).json({
                 message: 'Forbidden error'
@@ -27,7 +28,7 @@ const checkApiKey  = async (req, res, next) => {
         req.objectKey= objectKey
         return next()
     } catch(error) {
-
+        console.log({error})
     }
 }
 

@@ -22,12 +22,25 @@ class KeyTokenService {
     }
 
     static findUserById = async(userId) => {
-        return await keyTokenModel.findOne({user: new Types.ObjectId(userId)}).lean()
+        return await keyTokenModel.findOne({user: new Types.ObjectId(userId)})
     }
 
     static removeKeyById = async(id) => {
         return await keyTokenModel.findOneAndRemove(id)
     }
+
+    static findUserByEmail = async(email) => {
+        return await keyTokenModel.findOne({email})
+    }
+
+    static getUserById = async(userId) => {
+        return await keyTokenModel.findOne({user: new Types.ObjectId(userId)})
+    }
+
+    static deleteUserById = async(userId) => {
+        return await keyTokenModel.deleteOne({user: new Types.ObjectId(userId)})
+    }
+
 }
 
 module.exports = KeyTokenService
