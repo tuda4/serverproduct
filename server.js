@@ -20,6 +20,22 @@ app.use('/', require('./src/routes'))
 
 // handle errors
 
+app.use((req, res, next) => {
+    const error = new Error('Not Found')
+    error.status = 404
+    next(error)
+})
+
+app.use((error, req, res, next) => {
+    const statusCode = error.status || 500  
+    return res.status(statusCode).json({
+        status: 'Error',
+        code: statusCode,
+        stack: error.stack,
+        message: error.message || 'Internal Server Error'
+    })
+})
+
 const PORT = port || 3001
 const server = app.listen(PORT, () => {
     console.log(`WSV eCommerce started on http://localhost:${PORT}`);

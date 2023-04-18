@@ -40,7 +40,7 @@ const cosmeticsSchema = new Schema({
 module.exports =  {
     product: model(DOCUMENT_NAME, productionSchema),
     perfume: model('Perfume', perfumeSchema),
-    cosmeticsSchema: model('Cosmetic', cosmeticsSchema)
+    cosmetic: model('Cosmetic', cosmeticsSchema)
 }
 
 
