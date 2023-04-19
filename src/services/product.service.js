@@ -20,16 +20,7 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-    // static createProductFactory(type, payload) {
-    //     switch(type) {
-    //         case 'Perfume':
-    //             return new  Perfume(payload).createProduct()
-    //         case 'Cosmetic':
-    //             return new Cosmetic(payload).createProduct()
-    //         default:
-    //             throw new BadRequestErrorResponse(`Invalid type ${type}`)
-    //     }
-    // }
+
 }
 
 // define a class Product
