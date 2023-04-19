@@ -17,16 +17,6 @@ class ProductFactory {
 }
 
 // define a class Product
-/**
- * productName: {type: String, required: true},
-    productPrice: {type: Number, required: true},
-    productThumbnail: {type: String, required: true},
-    productDescription: {type: String},
-    productQuantity: {type: Number, required: true},
-    productType: {type: String, required: true, enum: ['Perfume', 'Cosmetics']},
-    productShop: {type: Schema.Types.ObjectId, ref: 'Shop'},
-    productAttribute: {type: Schema.Types.Mixed, required: true}
- */
 
 class Product {
     constructor({productName, productPrice, productThumbnail, productDescription, productQuantity, productType, productShop, productAttribute}) {
@@ -40,8 +30,8 @@ class Product {
         this.productAttribute = productAttribute;
     }
 
-    async createProduct() {
-        return await product.create(this)
+    async createProduct(productId) {
+        return await product.create({...this, _id: productId})
     }
 }
 
@@ -50,10 +40,13 @@ class Product {
 class Perfume extends Product {
     async createProduct() {
 
-        const newPerfume = await  perfume.create(this.productAttribute)
+        const newPerfume = await  perfume.create({
+            ...this.productAttribute,
+            productShop: this.productShop
+        })
         if (!newPerfume) throw new BadRequestErrorResponse('create new perfume error') 
 
-        const newProduct = await super.createProduct()
+        const newProduct = await super.createProduct(newPerfume._id)
         if(!newProduct) throw new BadRequestErrorResponse('create new Product error')
 
         return newProduct
@@ -62,10 +55,10 @@ class Perfume extends Product {
 
 class Cosmetic extends Product {
     async createProduct() {
-        const newCosmetic = await  cosmetic.create(this.productAttribute)
+        const newCosmetic = await  cosmetic.create({...this.productAttribute,  productShop: this.productShop})
         if(!newCosmetic) throw new BadRequestErrorResponse('create new cosmetic error') 
 
-        const newProduct = await super.createProduct()
+        const newProduct = await super.createProduct(newCosmetic._id)
         if(!newProduct) throw new BadRequestErrorResponse('create new Product error') 
 
         return newProduct

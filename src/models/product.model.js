@@ -24,6 +24,7 @@ const productionSchema = new Schema({
 const perfumeSchema = new Schema({
     brand: {type: String, required: true},
     volume: {type: Number, required: true},
+    productShop: {type: Schema.Types.ObjectId, ref: 'Shop'},
 }, {
     collection: 'Perfumes',
     timestamps: true
@@ -31,7 +32,8 @@ const perfumeSchema = new Schema({
 
 const cosmeticsSchema = new Schema({
     brand: {type: String, required: true},
-    model: {type: String, required: true}
+    model: {type: String, required: true},
+    productShop: {type: Schema.Types.ObjectId, ref: 'Shop'},
 }, {
     collection: 'Cosmetics',
     timestamps: true
