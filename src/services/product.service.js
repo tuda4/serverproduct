@@ -4,16 +4,23 @@ const { BadRequestErrorResponse } = require('../core/error.response');
 const {product,perfume, cosmetic} = require('../models/product.model')
 
 class ProductFactory {
-    static createProductFactory(type, payload) {
-        switch(type) {
-            case 'Perfume':
-                return new  Perfume(payload).createProduct()
-            case 'Cosmetic':
-                return new Cosmetic(payload).createProduct()
-            default:
-                throw new BadRequestErrorResponse(`Invalid type ${type}`)
-        }
+    // optimal project with factory and strategy pattern
+    static productRegister = {} // type: string, classRef: any 
+
+    static registerProductTypes (type, classRef)  {
+        ProductFactory.productRegister[type] = classRef
     }
+
+    static async createProductFactory (type, payload) {
+        const productClass = ProductFactory.productRegister[type]
+        if(!productClass){
+            throw new BadRequestErrorResponse(`Invalid type ${type}`)
+        }
+
+        return new productClass(payload).createProduct()
+    }
+
+
 }
 
 // define a class Product
@@ -64,5 +71,8 @@ class Cosmetic extends Product {
         return newProduct
     }
 }
+
+ProductFactory.registerProductTypes('Cosmetic', Cosmetic)
+ProductFactory.registerProductTypes('Perfume', Perfume)
 
 module.exports = ProductFactory

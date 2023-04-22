@@ -11,7 +11,7 @@ const productionSchema = new Schema({
     productThumbnail: {type: String, required: true},
     productDescription: {type: String},
     productQuantity: {type: Number, required: true},
-    productType: {type: String, required: true, enum: ['Perfume', 'Cosmetics']},
+    productType: {type: String, required: true, enum: ['Perfume', 'Cosmetic']},
     productShop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     productAttribute: {type: Schema.Types.Mixed, required: true}
 }, {
