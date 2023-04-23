@@ -11,8 +11,82 @@ class ProductController {
                 ...req.body,
                 productShop: req.user.userId
             })
-         }).send(res)
+         }).send(res)   
     }
+
+    /**
+     * @description Set published and unpublish product 
+     * @param {any} productShop 
+     * @param {any} productId
+     * @return { JSON } 
+     */
+
+    // PUT 
+    setPublishedProductInShop = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Set published product successfully',
+            metadata: await ProductFactory.setPublishedProductInShop({
+                productShop: req.user.userId,
+                productId: req.params.id,
+            })
+        }).send(res)
+    }
+
+    setUnPublishedProductInShop = async(req, res, next) =>{
+        new SuccessResponse({
+            message: 'Set unPublished product successfully',
+            metadata: await ProductFactory.setUnPublishedProductInShop({
+                productShop: req.user.userId,
+                productId: req.params.id,
+            })
+        }).send(res)
+    }
+    // QUERY
+    /**
+     * @description Get all  draft products in shop
+     * @param {Number} limit
+     * @param {Number} skip
+     * @return {JSON}
+     */
+
+    getAllDraftProducts = async(req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list draft products successfully',
+            metadata: await ProductFactory.getDraftProductInShop({
+                productShop: req.user.userId
+            })
+        }).send(res)
+    }
+
+    /**
+     * @description get all published products in shop
+     * @param {String} productShop 
+     * @return {JSON}
+     */
+
+    getAllPublishedProducts = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Get list published product successfully",
+            metadata: await ProductFactory.getPublishedProductInShop({
+                productShop: req.user.userId
+            })
+        }).send(res)
+    }
+    /**
+     * @description handle search product by user
+     * @param {String} keySearch 
+     * @return {JSON}
+     */
+    getSearchListProduct = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Search list product successfully",
+            metadata: await ProductFactory.getSearchListProduct({
+                keySearch: req.params.keySearch
+            })
+        }).send(res)
+    }
+
+    
 }
 
 module.exports = new ProductController();

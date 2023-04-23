@@ -8,8 +8,8 @@ const router = express.Router()
 router.use(checkApiKey)
 // check permissions
 router.use(checkPermissions('0000'))
-router.use('/api/v1', require('./access/index'))
 router.use('/api/v1/product', require('./product/index'))
+router.use('/api/v1', require('./access/index'))
 
 
 module.exports = router
