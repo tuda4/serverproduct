@@ -1,7 +1,8 @@
 'use strict';
 
 const { BadRequestErrorResponse } = require('../core/error.response');
-const {product,perfume, cosmetic} = require('../models/product.model')
+const {product,perfume, cosmetic} = require('../models/product.model');
+const { findAllDraftProduct, setPublishedProductInShop, findAllPublishProduct, setUnPublishedProductInShop, searchPublishProduct } = require('../models/reposistories/product.repo');
 
 class ProductFactory {
     // optimal project with factory and strategy pattern
@@ -11,6 +12,8 @@ class ProductFactory {
         ProductFactory.productRegister[type] = classRef
     }
 
+    // create a new product
+
     static async createProductFactory (type, payload) {
         const productClass = ProductFactory.productRegister[type]
         if(!productClass){
@@ -19,7 +22,30 @@ class ProductFactory {
 
         return new productClass(payload).createProduct()
     }
+    // get all draft products in shop
+    static async getDraftProductInShop ({productShop, skip = 0, limit = 20}) {
+        const query = {productShop, isDraft: true}
+        return await findAllDraftProduct({query, skip, limit})
+    }
 
+    // get all published products in shop
+    static async getPublishedProductInShop ({productShop, skip = 0, limit = 20 }) {
+        const query = {productShop, isPublished: true}
+        return await findAllPublishProduct({query, skip, limit})
+    }
+
+    // set published product
+    static async setPublishedProductInShop ({productShop, productId}) {
+        return await setPublishedProductInShop({productShop, productId})
+    }
+    // set unpublished product
+    static async setUnPublishedProductInShop ({productShop, productId}) {
+        return await setUnPublishedProductInShop({productShop, productId})
+    }
+
+    static async getSearchListProduct ({keySearch}) {
+        return await searchPublishProduct({keySearch})
+    }
 
 }
 
