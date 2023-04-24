@@ -2,7 +2,8 @@
 
 const { BadRequestErrorResponse } = require('../core/error.response');
 const {product,perfume, cosmetic} = require('../models/product.model');
-const { findAllDraftProduct, setPublishedProductInShop, findAllPublishProduct, setUnPublishedProductInShop, searchPublishProduct } = require('../models/reposistories/product.repo');
+const { findAllDraftProduct, setPublishedProductInShop, findAllPublishProduct, setUnPublishedProductInShop, searchPublishProduct, findAllProducts, findOneProduct } = require('../models/reposistories/product.repo');
+const { getSelectedData } = require('../utils');
 
 class ProductFactory {
     // optimal project with factory and strategy pattern
@@ -45,6 +46,19 @@ class ProductFactory {
 
     static async getSearchListProduct ({keySearch}) {
         return await searchPublishProduct({keySearch})
+    }
+    // user get all products when they on website
+    static async getAllProductsInShop ({limit = 50, sort = 'ctime', page = 1, filter = {isPublished: true}}) {
+        return await findAllProducts({limit, sort, page, filter, 
+        select: ['productName', 'productPrice', 'productThumbnail', 'productAttribute', 'productRatings']
+        })
+    }
+
+    // user get one product
+    static async getOneProductInShop ({productId}) {
+        return await findOneProduct({productId, 
+        unSelect: ['__v', 'isDraft', 'isPublished']
+        })
     }
 
 }

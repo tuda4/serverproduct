@@ -6,6 +6,8 @@ const asyncHandler = require('../../helpers/asyncHandler');
 const { authentication } = require('../../auth/authUtils');
 
 router.get('/search/:keySearch', asyncHandler(productController.getSearchListProduct))
+router.get('/', asyncHandler(productController.getAllProducts))
+router.get('/:id', asyncHandler(productController.getOneProduct))
 // authentication middleware
 router.use(authentication)
 // handle create new Product

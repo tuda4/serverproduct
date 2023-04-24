@@ -86,6 +86,33 @@ class ProductController {
         }).send(res)
     }
 
+    /**
+     * @description get all products
+     * @param {*} req 
+     * @return {JSON}
+     */
+
+    getAllProducts = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Search list getAllProducts successfully",
+            metadata: await ProductFactory.getAllProductsInShop(req.query)
+        }).send(res)
+    }
+
+    /**
+     * @description get one product
+     * @param {String} productId
+     * @return {JSON}
+     */
+
+    getOneProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Search list get one Product successfully",
+            metadata: await ProductFactory.getOneProductInShop({
+                productId: req.params.id
+            })
+        }).send(res)
+    }
     
 }
 
