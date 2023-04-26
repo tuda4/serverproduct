@@ -12,6 +12,7 @@ router.get('/:id', asyncHandler(productController.getOneProduct))
 router.use(authentication)
 // handle create new Product
 router.post('/create', asyncHandler(productController.createProduct))
+router.patch('/updated/:productId', asyncHandler(productController.updateProduct))
 // handle set published product
 router.post('/publish/:id', asyncHandler(productController.setPublishedProductInShop))
 //  handle set unpublished product
