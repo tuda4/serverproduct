@@ -2,8 +2,8 @@
 
 const { BadRequestErrorResponse } = require('../core/error.response');
 const {product,perfume, cosmetic} = require('../models/product.model');
-const { findAllDraftProduct, setPublishedProductInShop, findAllPublishProduct, setUnPublishedProductInShop, searchPublishProduct, findAllProducts, findOneProduct } = require('../models/reposistories/product.repo');
-const { getSelectedData } = require('../utils');
+const { findAllDraftProduct, setPublishedProductInShop, findAllPublishProduct, setUnPublishedProductInShop, searchPublishProduct, findAllProducts, findOneProduct, updateProductById } = require('../models/reposistories/product.repo');
+const { getSelectedData, removeInvalidObjects, updateNestedObjects } = require('../utils');
 
 class ProductFactory {
     // optimal project with factory and strategy pattern
@@ -22,6 +22,15 @@ class ProductFactory {
         }
 
         return new productClass(payload).createProduct()
+    }
+
+    static async updateProduct(type, productId , payload) {
+        const productClass = ProductFactory.productRegister[type]
+        if(!productClass){
+            throw new BadRequestErrorResponse(`Invalid type ${type}`)
+        }
+
+        return new productClass(payload).updateProductClass(productId)
     }
     // get all draft products in shop
     static async getDraftProductInShop ({productShop, skip = 0, limit = 20}) {
@@ -54,6 +63,8 @@ class ProductFactory {
         })
     }
 
+  
+
     // user get one product
     static async getOneProductInShop ({productId}) {
         return await findOneProduct({productId, 
@@ -80,6 +91,10 @@ class Product {
     async createProduct(productId) {
         return await product.create({...this, _id: productId})
     }
+
+    async updateProduct(productId, payload) {
+        return await updateProductById({model: product, productId, payload})
+    }
 }
 
 // defined subclasses for different products type of Perfume
@@ -98,6 +113,17 @@ class Perfume extends Product {
 
         return newProduct
     }
+
+    async updateProductClass(productId) {
+
+        const objectParams = removeInvalidObjects(this)
+        if(objectParams.productAttribute) {
+             await updateProductById({model: perfume, productId, payload: updateNestedObjects(objectParams.productAttribute) })
+        }
+    
+        return await super.updateProduct(productId, updateNestedObjects(objectParams))
+    }
+    
 }
 
 class Cosmetic extends Product {
@@ -109,6 +135,15 @@ class Cosmetic extends Product {
         if(!newProduct) throw new BadRequestErrorResponse('create new Product error') 
 
         return newProduct
+    }
+
+    async updateProductClass(productId) {
+
+        const objectParams = removeInvalidObjects(this)
+        if(objectParams.productAttribute) {
+            return await updateProductById({model: cosmetic, productId, payload: updateNestedObjects(objectParams.productAttribute) })
+        }
+        return await super.updateProduct(productId, updateNestedObjects(objectParams))
     }
 }
 
