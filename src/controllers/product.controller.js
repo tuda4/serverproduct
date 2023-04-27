@@ -13,6 +13,13 @@ class ProductController {
             })
          }).send(res)   
     }
+    /**
+     * @description update product
+     * @param {String}  productType 
+     * @param {String} productId
+     * @param {Object} payload
+     * @return {JSON}
+     */
 
     updateProduct = async (req, res, next) => {
         new SuccessResponse({
