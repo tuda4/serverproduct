@@ -13,7 +13,7 @@ const getSelectedData = (select = []) => {
 const getUnSelectedData = (select = []) => {
     return Object.fromEntries(select.map(el => [el , 0]))
 }
-
+// check null values 
 const removeInvalidObjects = (object) => {
     Object.keys(object).forEach(key => {
         if(object[key] == null) {
