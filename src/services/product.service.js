@@ -94,6 +94,7 @@ class ProductFactory {
         "productThumbnail",
         "productAttribute",
         "productRatings",
+        "productShop"
       ],
     });
   }
