@@ -10,6 +10,7 @@ router.use(checkApiKey)
 router.use(checkPermissions('0000'))
 router.use('/api/v1/discount', require('./discount/index'))
 router.use('/api/v1/product', require('./product/index'))
+router.use('/api/v1/cart', require('./cart/index'))
 router.use('/api/v1', require('./access/index'))
 
 
