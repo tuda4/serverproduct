@@ -157,6 +157,7 @@ class DiscountService {
     if (!foundDiscount) {
       throw new NotFoundError("Discount not found");
     }
+
     const {
       discountIsActive,
       discountMaxUses,

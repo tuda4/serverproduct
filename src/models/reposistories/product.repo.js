@@ -112,6 +112,23 @@ const queryProduct = async ({ query, skip, limit }) => {
     .exec();
 };
 
+const checkoutProductsByServer = async (productsOrders = []) => {
+  return await Promise.all(
+    productsOrders.map(async (productsOrder) => {
+      const foundProduct = await product.findById({
+        _id: new Types.ObjectId(productsOrder.productId),
+      });
+      if (foundProduct) {
+        return {
+          productId: productsOrder.productId,
+          productPrice: foundProduct.productPrice,
+          productQuantity: productsOrder.productQuantity,
+        };
+      }
+    })
+  );
+};
+
 module.exports = {
   findAllDraftProduct,
   findAllPublishProduct,
@@ -122,4 +139,5 @@ module.exports = {
   findOneProduct,
   updateProductById,
   findProductById,
+  checkoutProductsByServer,
 };
