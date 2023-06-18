@@ -4,11 +4,13 @@ const {
   NotFoundError,
   BadRequestErrorResponse,
 } = require("../core/error.response");
+const orderModel = require("../models/order.model");
 const { findCartById } = require("../models/reposistories/cart.repo");
 const {
   checkoutProductsByServer,
 } = require("../models/reposistories/product.repo");
 const { getDiscountAmount } = require("./discount.service");
+const { acquireKeyLock } = require("./redis.service");
 
 class CheckoutService {
   /*
@@ -79,6 +81,58 @@ class CheckoutService {
       productsNewOrder,
       checkoutOrder,
     };
+  }
+
+  static async orderByUser({
+    productsOrder,
+    cartId,
+    userId,
+    userAddress = {},
+    userPayment = {}
+  }) {
+    const { productsNewOrder, checkoutOrder } = await CheckoutService.checkoutReview({
+      cartId,
+      userId,
+      productsOrder
+    })
+
+    // inspect the products
+    const products = productsNewOrder.flatMap(order => order.itemProducts)
+    console.log('[checkoutService]', products)
+    let acquireProduct = [];
+    for (let i = 0; i < products.length; i++) {
+      const { productId, productQuantity } = products[i]
+      const keyLock = await acquireKeyLock(productId, productQuantity, cartId)
+      acquireKeyLock.push(keyLock ? 'success' : 'fail')
+    }
+    if (acquireProduct.some(item => item === 'fail')) {
+      throw new BadRequestErrorResponse('A lot of products updated, please returned your cart')
+    }
+
+    const newOrder = await orderModel.create({
+      orderUserId: userId,
+      orderCheckout: checkoutOrder,
+      orderShipping: userAddress,
+      orderPayment: userPayment,
+      orderProducts: productsNewOrder
+    })
+    // if success, remove product in user cart
+    if (newOrder) {
+
+    }
+    return newOrder
+  }
+
+  static async getOrderByUser() {
+
+  }
+
+  static async cancelOrderByUser() {
+
+  }
+
+  static async updatedOrderStatusByShop () {
+    
   }
 }
 
